@@ -32,7 +32,8 @@ class AuthController(
 
     @PostMapping("/register", consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun register(@Valid @RequestBody request: RegisterRequest): ResponseEntity<UserVO> {
-        val createdUser = registerUser.execute(register = request.toDTO())
+        val register = AuthMapper.toDTO(request)
+        val createdUser = registerUser.execute(register)
 
         // 2) monta Location do recurso criado (quando houver /api/v1/users/{id})
         val location = uRI(createdUser)
