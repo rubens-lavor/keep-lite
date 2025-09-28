@@ -1,0 +1,55 @@
+services:
+  # Serviço do MongoDB
+  mongo-db:
+    image: mongo:7.0 # Usamos uma imagem oficial do MongoDB
+    container_name: keeplite-mongo
+    ports:
+      - "27017:27017" # Mapeia a porta do contêiner para a sua máquina
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - mongo_data:/data/db # Garante que os dados do Mongo persistam
+    networks:
+      - keeplite-network
+
+  # Serviço do Redis
+  redis-cache:
+    image: redis:7.2-alpine # Imagem leve do Redis
+    container_name: keeplite-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass yourpassword # Define uma senha para o Redis
+    volumes:
+      - redis_data:/data # Garante que os dados do Redis persistam
+    networks:
+      - keeplite-network
+
+  # Serviço da API
+  keep-lite-api:
+    build: . # Constrói a imagem usando o Dockerfile na pasta atual
+    container_name: keeplite-api
+    depends_on: # Garante que os bancos subam ANTES da API
+      - mongo-db
+      - redis-cache
+    ports:
+      - "8080:8080"
+    environment:
+      # Sobrescreve as propriedades do Spring para conectar com os outros contêineres
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATA_MONGODB_URI=mongodb://root:password@mongo-db:27017/keeplite?authSource=admin
+      - SPRING_DATA_REDIS_HOST=redis-cache
+      - SPRING_DATA_REDIS_PORT=6379
+      - SPRING_DATA_REDIS_PASSWORD=yourpassword
+    networks:
+      - keeplite-network
+
+# Define os volumes nomeados para persistência de dados
+volumes:
+  mongo_data:
+  redis_data:
+
+# Define a rede customizada para a comunicação entre os serviços
+networks:
+  keeplite-network:
+    driver: bridge

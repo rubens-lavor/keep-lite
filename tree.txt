@@ -1,0 +1,99 @@
+.
+├── build.gradle.kts
+├── gradle
+│   └── wrapper
+│       ├── gradle-wrapper.jar
+│       └── gradle-wrapper.properties
+├── gradlew
+├── gradlew.bat
+├── HELP.md
+├── settings.gradle.kts
+├── src
+│   ├── main
+│   │   ├── kotlin
+│   │   │   └── com
+│   │   │       └── rubenslavor
+│   │   │           └── keeplite
+│   │   │               ├── application
+│   │   │               │   ├── auth
+│   │   │               │   │   ├── controller
+│   │   │               │   │   │   └── v1
+│   │   │               │   │   │       └── AuthController.kt
+│   │   │               │   │   ├── jwt
+│   │   │               │   │   │   └── JwtProvider.kt
+│   │   │               │   │   ├── mapper
+│   │   │               │   │   │   └── AuthMapper.kt
+│   │   │               │   │   ├── request
+│   │   │               │   │   │   ├── LoginRequest.kt
+│   │   │               │   │   │   └── RegisterRequest.kt
+│   │   │               │   │   └── response
+│   │   │               │   │       ├── TokenResponse.kt
+│   │   │               │   │       └── UserResponse.kt
+│   │   │               │   ├── config
+│   │   │               │   │   └── RedisConfig.kt
+│   │   │               │   ├── note
+│   │   │               │   │   ├── controller
+│   │   │               │   │   │   └── v1
+│   │   │               │   │   │       └── NoteController.kt
+│   │   │               │   │   ├── mapper
+│   │   │               │   │   │   └── NoteMapper.kt
+│   │   │               │   │   ├── request
+│   │   │               │   │   │   ├── ChecklistItemRequest.kt
+│   │   │               │   │   │   └── NoteRequest.kt
+│   │   │               │   │   └── response
+│   │   │               │   │       ├── ChecklistItemResponse.kt
+│   │   │               │   │       └── NoteResponse.kt
+│   │   │               │   └── usecase
+│   │   │               │       ├── AuthenticateUserUseCaseImpl.kt
+│   │   │               │       └── RegisterUserUseCaseImpl.kt
+│   │   │               ├── domain
+│   │   │               │   ├── dataprovider
+│   │   │               │   │   ├── CreateUserDataProvider.kt
+│   │   │               │   │   └── FetchUserDataProvider.kt
+│   │   │               │   ├── dto
+│   │   │               │   │   ├── ChecklistItemDTO.kt
+│   │   │               │   │   ├── LoginDTO.kt
+│   │   │               │   │   ├── NoteDTO.kt
+│   │   │               │   │   ├── RegisterDTO.kt
+│   │   │               │   │   ├── TokenDTO.kt
+│   │   │               │   │   └── UserDTO.kt
+│   │   │               │   ├── entity
+│   │   │               │   │   └── User.kt
+│   │   │               │   ├── enums
+│   │   │               │   ├── exceptions
+│   │   │               │   │   └── BusinessException.kt
+│   │   │               │   └── usecase
+│   │   │               │       ├── AuthenticateUserUseCase.kt
+│   │   │               │       ├── CreateNoteUseCase.kt
+│   │   │               │       ├── DeleteNoteUseCase.kt
+│   │   │               │       ├── GetNoteUseCase.kt
+│   │   │               │       ├── ListNotesUseCase.kt
+│   │   │               │       ├── RegisterUserUseCase.kt
+│   │   │               │       └── UpdateNoteUseCase.kt
+│   │   │               ├── infrastructure
+│   │   │               │   ├── config
+│   │   │               │   │   └── MongoConfig.kt
+│   │   │               │   ├── dataprovider
+│   │   │               │   │   └── UserDataProvider.kt
+│   │   │               │   └── mapper
+│   │   │               │       └── UserMapper.kt
+│   │   │               └── KeepLiteApplication.kt
+│   │   └── resources
+│   │       ├── application.properties
+│   │       ├── static
+│   │       └── templates
+│   └── test
+│       └── kotlin
+│           └── com
+│               └── rubenslavor
+│                   └── keeplite
+│                       ├── application
+│                       │   └── controller
+│                       │       └── v1
+│                       │           └── NoteControllerTest.kt
+│                       ├── domain
+│                       │   └── usecase
+│                       └── KeepLiteApplicationTests.kt
+└── tree.txt
+
+59 directories, 49 files
