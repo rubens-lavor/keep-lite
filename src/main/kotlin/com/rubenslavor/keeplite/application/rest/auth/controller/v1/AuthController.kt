@@ -5,6 +5,7 @@ import com.rubenslavor.keeplite.application.rest.auth.request.LoginRequest
 import com.rubenslavor.keeplite.application.rest.auth.response.TokenResponse
 import com.rubenslavor.keeplite.domain.auth.usecase.AuthenticateUserUseCase
 import jakarta.validation.Valid
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseCookie
@@ -19,7 +20,9 @@ import java.time.Duration
 @RestController
 @RequestMapping("/api/v1/auth")
 class AuthController(
-    private val authenticateUser: AuthenticateUserUseCase
+    private val authenticateUser: AuthenticateUserUseCase,
+    @param:Value("\${jwt.refresh-token-expiration-ms}")
+    private val refreshTokenDurationMs: Long
 ) {
     @PostMapping("/login", consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun login(@Valid @RequestBody request: LoginRequest): ResponseEntity<TokenResponse> {
@@ -27,8 +30,7 @@ class AuthController(
         val login = AuthMapper.toModel(request)
         val token = authenticateUser.execute(login)
 
-        // TODO: [DÚVIDA] aqui vai o tempo do accessToken ou do refreshToken??
-        val refreshCookie = cookie(token.refreshToken, maxAge = 15)
+        val refreshCookie = cookie(token.refreshToken, maxAge = refreshTokenDurationMs / 60000)
         val body: TokenResponse = AuthMapper.toResponse(token)
 
         return ResponseEntity.ok()
@@ -41,11 +43,11 @@ class AuthController(
     fun refresh(@CookieValue("refresh_token") refreshToken: String): ResponseEntity<TokenResponse> {
         val token = authenticateUser.refresh(refreshToken)
 
-        val newRefreshCookie = cookie(refreshToken, maxAge = 15) // TODO: [DÚVIDA] aqui vai o tempo do accessToken ou do refreshToken??
+        val refreshCookie = cookie(token.refreshToken, maxAge = refreshTokenDurationMs / 60000)
         val body: TokenResponse = AuthMapper.toResponse(token)
 
         return ResponseEntity.ok()
-            .header(HttpHeaders.SET_COOKIE, newRefreshCookie.toString())
+            .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
             .header(HttpHeaders.CACHE_CONTROL, "no-store")
             .body(body)
     }
@@ -57,11 +59,10 @@ class AuthController(
         val expiredCookie = cookie(maxAge = 0)
 
         return ResponseEntity.noContent()
-            .header(HttpHeaders.SET_COOKIE, expiredCookie.toString()) // TODO: [DÚVIDA] pq estou mando isso no header?
+            .header(HttpHeaders.SET_COOKIE, expiredCookie.toString())
             .build()
     }
 
-    // TODO: [DÚVIDA] preciso entender a nessecidade desse método tbm
     private fun cookie(token: String = "", maxAge: Long) = ResponseCookie
         .from("refresh_token", token)
         .httpOnly(true)

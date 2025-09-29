@@ -21,10 +21,6 @@ class JwtProvider(
     private val refreshTokenExpiration: Long
 ) {
 
-//    val accessTokenValidityInMillisecond: Long = 15 * 60 * 1000 // 15 minutos
-//    val refreshTokenValidityInMillisecond: Long = 7 * 24 * 60 * 60 * 1000 // 7 dias
-//    private val key: Key = Keys.secretKeyFor(SignatureAlgorithm.HS256)
-
     private val secretKey: SecretKey by lazy {
         Keys.hmacShaKeyFor(secret.toByteArray())
     }
@@ -71,32 +67,6 @@ class JwtProvider(
             .build()
             .parseClaimsJws(token)
             .body
-    }
-
-    fun generateAccessToken(user: UserModel): String {
-        val now = Date()
-        val expiry = Date(now.time + accessTokenExpiration)
-
-        return Jwts.builder()
-            .setSubject(user.id.toString())
-            .setIssuedAt(now)
-            .setExpiration(expiry)
-            .claim("email", user.email)
-            .signWith(secretKey)
-            .compact()
-    }
-
-    fun generateRefreshToken(user: UserModel): String {
-        val now = Date()
-        val expiry = Date(now.time + refreshTokenExpiration)
-
-        return Jwts.builder()
-            .setSubject(user.id.toString())
-            .setIssuedAt(now)
-            .setExpiration(expiry)
-            .claim("type", "refresh")
-            .signWith(secretKey)
-            .compact()
     }
 
     fun validateRefreshToken(token: String): String {

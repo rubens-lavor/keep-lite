@@ -1,0 +1,48 @@
+### Variáveis de Ambiente
+# Define a URL base para todas as requisições
+@baseUrl = http://localhost:8081/api/v1
+
+# Variáveis para armazenar os tokens após o login
+@accessToken =
+@refreshToken =
+
+
+###
+# ---------------------------------------------------
+# MÓDULO DE AUTENTICAÇÃO
+# ---------------------------------------------------
+###
+
+
+### 1. Autenticar e Obter Tokens
+# @name loginRequest
+# Este script captura os tokens da resposta e os salva nas variáveis @accessToken e @refreshToken
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "admin@keeplite.com",
+  "password": "password"
+}
+
+> {%
+    client.global.set("accessToken", response.body.accessToken);
+    client.global.set("refreshToken", response.body.refreshToken);
+    client.log(">>> Access Token salvo com sucesso!");
+%}
+
+
+### 2. (Exemplo) Acessar uma Rota Protegida
+# Esta requisição só funcionará DEPOIS que a requisição de login for executada.
+# Note como usamos a variável {{accessToken}} que foi capturada automaticamente.
+GET {{baseUrl}}/notes
+Authorization: Bearer {{accessToken}}
+
+
+### 3. (Exemplo) Renovar o Access Token
+# O cliente HTTP do IntelliJ ainda não suporta o envio de cookies de forma nativa e simples.
+# Para testar a rota de refresh, por enquanto, o Postman ou o Swagger ainda são mais fáceis.
+# Mas a estrutura da requisição seria esta:
+POST {{baseUrl}}/auth/refresh
+Cookie: refreshToken={{refreshToken}}

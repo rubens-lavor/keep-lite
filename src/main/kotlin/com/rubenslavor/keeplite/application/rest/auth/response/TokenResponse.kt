@@ -1,6 +1,6 @@
-package com.rubenslavor.keeplite.domain.dto
+package com.rubenslavor.keeplite.application.rest.auth.response
 
-data class TokenDTO(
+data class TokenResponse(
     val tokenType: String = "Bearer",
     val accessToken: String,
     val expiresIn: Long,

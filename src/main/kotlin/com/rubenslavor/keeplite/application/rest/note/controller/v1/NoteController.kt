@@ -1,18 +1,15 @@
 package com.rubenslavor.keeplite.application.rest.note.controller.v1
 
-import com.rubenslavor.keeplite.application.rest.note.mapper.NoteMapper
+import com.rubenslavor.keeplite.application.rest.note.mapper.NoteApiMapper
 import com.rubenslavor.keeplite.application.rest.note.request.NoteRequest
 import com.rubenslavor.keeplite.application.rest.note.response.NoteResponse
-import com.rubenslavor.keeplite.domain.note.model.NoteModel
-//import com.rubenslavor.keeplite.domain.note.usecase.CreateNoteUseCase
-//import com.rubenslavor.keeplite.domain.note.usecase.DeleteNoteUseCase
-//import com.rubenslavor.keeplite.domain.note.usecase.GetNoteUseCase
-//import com.rubenslavor.keeplite.domain.note.usecase.ListNotesUseCase
-//import com.rubenslavor.keeplite.domain.note.usecase.UpdateNoteUseCase
+import com.rubenslavor.keeplite.domain.note.usecase.CreateNoteUseCase
+import com.rubenslavor.keeplite.domain.note.usecase.DeleteNoteUseCase
+import com.rubenslavor.keeplite.domain.note.usecase.GetNoteUseCase
+import com.rubenslavor.keeplite.domain.note.usecase.UpdateNoteUseCase
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
-import org.springframework.data.domain.Page
 import org.springframework.http.ResponseEntity
-import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -20,58 +17,58 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import java.net.URI
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder
+import java.util.UUID
 
+@Tag(name = "Note Controller")
 @RestController
 @RequestMapping("/api/v1/notes")
 class NoteController(
-//    private val createNote: CreateNoteUseCase,
-//    private val updateNote: UpdateNoteUseCase,
-//    private val deleteNote: DeleteNoteUseCase,
-//    private val getNote: GetNoteUseCase,
-//    private val listNotes: ListNotesUseCase
+    private val createNoteUseCase: CreateNoteUseCase,
+    private val getNoteUseCase: GetNoteUseCase,
+    private val updateNoteUseCase: UpdateNoteUseCase,
+    private val deleteNoteUseCase: DeleteNoteUseCase
 ) {
-//
-//    @GetMapping
-//    fun list(
-//        @RequestParam(required = false) title: String?,
-//        @RequestParam(defaultValue = "0") page: Int,
-//        @RequestParam(defaultValue = "10") size: Int
-//    ): ResponseEntity<Page<NoteResponse>> {
-//        val notes = listNotes.execute(title, page, size)
-//        val body = notes.map { NoteMapper.toVO(it) }
-//        return ResponseEntity.ok(body)
-//    }
-//
-//    @GetMapping("/{id}")
-//    fun get(@PathVariable id: String): ResponseEntity<NoteResponse> {
-//        val note: NoteModel = getNote.execute(id) ?: return ResponseEntity.notFound().build()
-//        return ResponseEntity.ok(NoteMapper.toVO(note))
-//    }
-//
-//    @PostMapping
-//    fun create(
-//        @Valid @RequestBody req: NoteRequest,
-//        authentication: Authentication
-//    ): ResponseEntity<NoteResponse> {
-//        val userId = authentication.name
-//        val created: NoteModel = createNote.execute(NoteMapper.toDTO(request = req, userId = userId))
-//        val location = URI.create("/api/v1/notes/${created.id}")
-//        return ResponseEntity.created(location).body(NoteMapper.toVO(created))
-//    }
-//
-//    @PutMapping("/{id}")
-//    fun update(@PathVariable id: String, @Valid @RequestBody req: NoteRequest): ResponseEntity<NoteResponse> {
-//        val updated: NoteModel = updateNote.execute(id, NoteMapper.toDTO(req, id)) ?: return ResponseEntity.notFound().build()
-//        return ResponseEntity.ok(NoteMapper.toVO(updated))
-//    }
-//
-//    @DeleteMapping("/{id}")
-//    fun delete(@PathVariable id: String): ResponseEntity<Void> {
-//        val deleted: Boolean = deleteNote.execute(id)
-//        return if (deleted) ResponseEntity.noContent().build()
-//        else ResponseEntity.notFound().build()
-//    }
+
+    @PostMapping
+    fun create(@Valid @RequestBody request: NoteRequest): ResponseEntity<NoteResponse> {
+        val noteModel = NoteApiMapper.toModel(request)
+        val createdNote = createNoteUseCase.create(noteModel)
+        val response = NoteApiMapper.toResponse(createdNote)
+
+        val location = ServletUriComponentsBuilder
+            .fromCurrentRequest().path("/{id}")
+            .buildAndExpand(response.id).toUri()
+
+        return ResponseEntity.created(location).body(response)
+    }
+
+    @GetMapping
+    fun list(): ResponseEntity<List<NoteResponse>> {
+        val notes = getNoteUseCase.list()
+        val response = notes.map { NoteApiMapper.toResponse(it) }
+        return ResponseEntity.ok(response)
+    }
+
+    @GetMapping("/{id}")
+    fun getById(@PathVariable id: UUID): ResponseEntity<NoteResponse> {
+        val note = getNoteUseCase.get(id)
+        val response = NoteApiMapper.toResponse(note)
+        return ResponseEntity.ok(response)
+    }
+
+    @PutMapping("/{id}")
+    fun update(@PathVariable id: UUID, @Valid @RequestBody request: NoteRequest): ResponseEntity<NoteResponse> {
+        val noteModel = NoteApiMapper.toModel(request)
+        val updatedNote = updateNoteUseCase.update(id, noteModel)
+        val response = NoteApiMapper.toResponse(updatedNote)
+        return ResponseEntity.ok(response)
+    }
+
+    @DeleteMapping("/{id}")
+    fun delete(@PathVariable id: UUID): ResponseEntity<Void> {
+        deleteNoteUseCase.delete(id)
+        return ResponseEntity.noContent().build()
+    }
 }
