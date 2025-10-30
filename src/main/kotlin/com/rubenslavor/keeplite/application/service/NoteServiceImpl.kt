@@ -11,6 +11,8 @@ import com.rubenslavor.keeplite.domain.note.usecase.UpdateNoteUseCase
 import com.rubenslavor.keeplite.domain.user.entity.User
 import com.rubenslavor.keeplite.domain.user.repository.UserRepository
 import org.slf4j.LoggerFactory
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -24,6 +26,7 @@ class NoteServiceImpl(
 
     private val log = LoggerFactory.getLogger(javaClass)
 
+    @CacheEvict(value = ["notesByUserId"], keyGenerator = "userCacheKeyGenerator")
     override fun create(note: NoteModel): NoteModel {
         log.info("Criando nota: {}", note)
 
@@ -46,6 +49,7 @@ class NoteServiceImpl(
         }
     }
 
+    @Cacheable(value = ["notesByUserId"], keyGenerator = "userCacheKeyGenerator")
     override fun list(): List<NoteModel> {
         log.info("Buscando lista de notas")
 
@@ -56,6 +60,7 @@ class NoteServiceImpl(
         }
     }
 
+    @CacheEvict(value = ["notesByUserId"], keyGenerator = "userCacheKeyGenerator")
     override fun update(id: UUID, note: NoteModel): NoteModel {
         log.info("Atualizando nota id: {}", id)
 
@@ -80,6 +85,7 @@ class NoteServiceImpl(
         }
     }
 
+    @CacheEvict(value = ["notesByUserId"], keyGenerator = "userCacheKeyGenerator")
     override fun delete(id: UUID) {
         log.info("Deletando nota id: {}", id)
 

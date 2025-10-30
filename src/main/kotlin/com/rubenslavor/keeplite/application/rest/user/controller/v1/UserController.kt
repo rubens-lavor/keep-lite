@@ -27,8 +27,6 @@ class UserController(
         val register = UserMapper.toModel(request)
         val createdUser = registerUser.execute(register)
 
-        // 2) monta Location do recurso criado (quando houver /api/v1/users/{id})
-        // TODO: [DÚVIDA] para que serve o location???
         val location = uRI(createdUser)
         val body: UserResponse = UserMapper.toResponse(user = createdUser)
 
