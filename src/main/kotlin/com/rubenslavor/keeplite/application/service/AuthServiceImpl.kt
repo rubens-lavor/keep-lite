@@ -63,7 +63,7 @@ class AuthServiceImpl(
             throw BusinessException("Token inválido")
         }
 
-        val userId = jwt.validateRefreshToken(token)
+        val userId = jwt.validateRefreshToken(token).subject
         val user = userRepository.findById(UUID.fromString(userId))
             ?: run {
                 log.error("Usuário não encontrado para o ID de usuário no token de refresh: {}", userId)
@@ -88,9 +88,11 @@ class AuthServiceImpl(
     override fun logout(refreshToken: String) {
         log.info("Recebida requisição de logout.")
 
-        val exp = jwt.getExpiration(refreshToken)
+        val claims = jwt.validateRefreshToken(refreshToken)
+
+        val exp = claims.expiration
         val ttl = (exp.time - System.currentTimeMillis()).coerceAtLeast(0)
-        val userId = jwt.validateRefreshToken(refreshToken)
+        val userId = claims.subject
         val hash = hashToken(refreshToken)
 
         redis.opsForValue().set(

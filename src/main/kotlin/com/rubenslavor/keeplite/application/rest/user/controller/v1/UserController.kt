@@ -5,6 +5,7 @@ import com.rubenslavor.keeplite.application.rest.user.response.UserResponse
 import com.rubenslavor.keeplite.application.rest.user.mapper.UserMapper
 import com.rubenslavor.keeplite.domain.user.model.UserModel
 import com.rubenslavor.keeplite.domain.user.usecase.RegisterUserUseCase
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.net.URI
 
+@Tag(name = "User Controller")
 @RestController
 @RequestMapping("/api/v1/user")
 class UserController(

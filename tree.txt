@@ -1,5 +1,7 @@
 .
 ├── build.gradle.kts
+├── docker-compose.yml
+├── Dockerfile
 ├── gradle
 │   └── wrapper
 │       ├── gradle-wrapper.jar
@@ -7,6 +9,15 @@
 ├── gradlew
 ├── gradlew.bat
 ├── HELP.md
+├── k6-scripts
+│   ├── load-test-create-get-notes.js
+│   ├── load-test-grud-notes.js
+│   ├── load-test-notes.js
+│   ├── load-test-read-intensive-notes.js
+│   ├── seed-notes.js
+│   ├── seed-users.js
+│   └── users.json
+├── requests.http
 ├── settings.gradle.kts
 ├── src
 │   ├── main
@@ -15,85 +26,132 @@
 │   │   │       └── rubenslavor
 │   │   │           └── keeplite
 │   │   │               ├── application
-│   │   │               │   ├── auth
-│   │   │               │   │   ├── controller
-│   │   │               │   │   │   └── v1
-│   │   │               │   │   │       └── AuthController.kt
-│   │   │               │   │   ├── jwt
-│   │   │               │   │   │   └── JwtProvider.kt
-│   │   │               │   │   ├── mapper
-│   │   │               │   │   │   └── AuthMapper.kt
-│   │   │               │   │   ├── request
-│   │   │               │   │   │   ├── LoginRequest.kt
-│   │   │               │   │   │   └── RegisterRequest.kt
-│   │   │               │   │   └── response
-│   │   │               │   │       ├── TokenResponse.kt
-│   │   │               │   │       └── UserResponse.kt
-│   │   │               │   ├── config
-│   │   │               │   │   └── RedisConfig.kt
-│   │   │               │   ├── note
-│   │   │               │   │   ├── controller
-│   │   │               │   │   │   └── v1
-│   │   │               │   │   │       └── NoteController.kt
-│   │   │               │   │   ├── mapper
-│   │   │               │   │   │   └── NoteMapper.kt
-│   │   │               │   │   ├── request
-│   │   │               │   │   │   ├── ChecklistItemRequest.kt
-│   │   │               │   │   │   └── NoteRequest.kt
-│   │   │               │   │   └── response
-│   │   │               │   │       ├── ChecklistItemResponse.kt
-│   │   │               │   │       └── NoteResponse.kt
-│   │   │               │   └── usecase
-│   │   │               │       ├── AuthenticateUserUseCaseImpl.kt
-│   │   │               │       └── RegisterUserUseCaseImpl.kt
+│   │   │               │   ├── rest
+│   │   │               │   │   ├── auth
+│   │   │               │   │   │   ├── controller
+│   │   │               │   │   │   │   └── v1
+│   │   │               │   │   │   │       └── AuthController.kt
+│   │   │               │   │   │   ├── mapper
+│   │   │               │   │   │   │   └── AuthMapper.kt
+│   │   │               │   │   │   ├── request
+│   │   │               │   │   │   │   └── LoginRequest.kt
+│   │   │               │   │   │   └── response
+│   │   │               │   │   │       └── TokenResponse.kt
+│   │   │               │   │   ├── exception
+│   │   │               │   │   │   └── GlobalExceptionHandler.kt
+│   │   │               │   │   ├── note
+│   │   │               │   │   │   ├── controller
+│   │   │               │   │   │   │   └── v1
+│   │   │               │   │   │   │       └── NoteController.kt
+│   │   │               │   │   │   ├── mapper
+│   │   │               │   │   │   │   └── NoteApiMapper.kt
+│   │   │               │   │   │   ├── request
+│   │   │               │   │   │   │   ├── ChecklistItemRequest.kt
+│   │   │               │   │   │   │   └── NoteRequest.kt
+│   │   │               │   │   │   └── response
+│   │   │               │   │   │       ├── ChecklistItemResponse.kt
+│   │   │               │   │   │       └── NoteResponse.kt
+│   │   │               │   │   └── user
+│   │   │               │   │       ├── controller
+│   │   │               │   │       │   └── v1
+│   │   │               │   │       │       └── UserController.kt
+│   │   │               │   │       ├── mapper
+│   │   │               │   │       │   └── UserMapper.kt
+│   │   │               │   │       ├── request
+│   │   │               │   │       │   └── RegisterRequest.kt
+│   │   │               │   │       └── response
+│   │   │               │   │           └── UserResponse.kt
+│   │   │               │   └── service
+│   │   │               │       ├── AuthServiceImpl.kt
+│   │   │               │       ├── mapper
+│   │   │               │       │   ├── NoteDomainMapper.kt
+│   │   │               │       │   └── UserDomainMapper.kt
+│   │   │               │       ├── NoteServiceImpl.kt
+│   │   │               │       └── UserServiceImpl.kt
 │   │   │               ├── domain
-│   │   │               │   ├── dataprovider
-│   │   │               │   │   ├── CreateUserDataProvider.kt
-│   │   │               │   │   └── FetchUserDataProvider.kt
-│   │   │               │   ├── dto
-│   │   │               │   │   ├── ChecklistItemDTO.kt
-│   │   │               │   │   ├── LoginDTO.kt
-│   │   │               │   │   ├── NoteDTO.kt
-│   │   │               │   │   ├── RegisterDTO.kt
-│   │   │               │   │   ├── TokenDTO.kt
-│   │   │               │   │   └── UserDTO.kt
-│   │   │               │   ├── entity
-│   │   │               │   │   └── User.kt
+│   │   │               │   ├── auth
+│   │   │               │   │   ├── model
+│   │   │               │   │   │   ├── LoginModel.kt
+│   │   │               │   │   │   └── TokenModel.kt
+│   │   │               │   │   └── usecase
+│   │   │               │   │       └── AuthenticateUserUseCase.kt
 │   │   │               │   ├── enums
 │   │   │               │   ├── exceptions
 │   │   │               │   │   └── BusinessException.kt
-│   │   │               │   └── usecase
-│   │   │               │       ├── AuthenticateUserUseCase.kt
-│   │   │               │       ├── CreateNoteUseCase.kt
-│   │   │               │       ├── DeleteNoteUseCase.kt
-│   │   │               │       ├── GetNoteUseCase.kt
-│   │   │               │       ├── ListNotesUseCase.kt
-│   │   │               │       ├── RegisterUserUseCase.kt
-│   │   │               │       └── UpdateNoteUseCase.kt
+│   │   │               │   ├── note
+│   │   │               │   │   ├── entity
+│   │   │               │   │   │   ├── ChecklistItem.kt
+│   │   │               │   │   │   └── Note.kt
+│   │   │               │   │   ├── model
+│   │   │               │   │   │   ├── ChecklistItemModel.kt
+│   │   │               │   │   │   └── NoteModel.kt
+│   │   │               │   │   ├── repository
+│   │   │               │   │   │   └── NoteRepository.kt
+│   │   │               │   │   └── usecase
+│   │   │               │   │       ├── CreateNoteUseCase.kt
+│   │   │               │   │       ├── DeleteNoteUseCase.kt
+│   │   │               │   │       ├── GetNoteUseCase.kt
+│   │   │               │   │       └── UpdateNoteUseCase.kt
+│   │   │               │   └── user
+│   │   │               │       ├── entity
+│   │   │               │       │   └── User.kt
+│   │   │               │       ├── model
+│   │   │               │       │   ├── RegisterModel.kt
+│   │   │               │       │   └── UserModel.kt
+│   │   │               │       ├── repository
+│   │   │               │       │   └── UserRepository.kt
+│   │   │               │       └── usecase
+│   │   │               │           └── RegisterUserUseCase.kt
 │   │   │               ├── infrastructure
 │   │   │               │   ├── config
-│   │   │               │   │   └── MongoConfig.kt
-│   │   │               │   ├── dataprovider
-│   │   │               │   │   └── UserDataProvider.kt
-│   │   │               │   └── mapper
-│   │   │               │       └── UserMapper.kt
+│   │   │               │   │   ├── AdminUserInitializer.kt
+│   │   │               │   │   ├── ApplicationConfig.kt
+│   │   │               │   │   ├── CachingConfig.kt
+│   │   │               │   │   ├── OpenApiConfig.kt
+│   │   │               │   │   ├── RedisConfig.kt
+│   │   │               │   │   ├── SecurityConfig.kt
+│   │   │               │   │   └── UserCacheKeyGenerator.kt
+│   │   │               │   ├── persistence
+│   │   │               │   │   └── mongo
+│   │   │               │   │       ├── document
+│   │   │               │   │       │   ├── NoteDocument.kt
+│   │   │               │   │       │   └── UserDocument.kt
+│   │   │               │   │       ├── mapper
+│   │   │               │   │       │   ├── NotePersistenceMapper.kt
+│   │   │               │   │       │   └── UserPersistenceMapper.kt
+│   │   │               │   │       ├── NoteRepositoryImpl.kt
+│   │   │               │   │       ├── repository
+│   │   │               │   │       │   ├── NoteMongoRepository.kt
+│   │   │               │   │       │   └── UserMongoRepository.kt
+│   │   │               │   │       └── UserRepositoryImpl.kt
+│   │   │               │   └── security
+│   │   │               │       ├── jwt
+│   │   │               │       │   ├── JwtAuthenticationFilter.kt
+│   │   │               │       │   └── JwtProvider.kt
+│   │   │               │       ├── redis
+│   │   │               │       └── service
+│   │   │               │           └── UserDetailsServiceImpl.kt
 │   │   │               └── KeepLiteApplication.kt
 │   │   └── resources
+│   │       ├── application-dev.properties
+│   │       ├── application-docker.properties
 │   │       ├── application.properties
 │   │       ├── static
 │   │       └── templates
 │   └── test
-│       └── kotlin
-│           └── com
-│               └── rubenslavor
-│                   └── keeplite
-│                       ├── application
-│                       │   └── controller
-│                       │       └── v1
-│                       │           └── NoteControllerTest.kt
-│                       ├── domain
-│                       │   └── usecase
-│                       └── KeepLiteApplicationTests.kt
+│       ├── kotlin
+│       │   └── com
+│       │       └── rubenslavor
+│       │           └── keeplite
+│       │               ├── application
+│       │               │   └── controller
+│       │               │       └── v1
+│       │               │           └── NoteControllerTest.kt
+│       │               ├── domain
+│       │               │   └── usecase
+│       │               └── KeepLiteApplicationTests.kt
+│       └── resources
+│           └── application.properties
 └── tree.txt
 
-59 directories, 49 files
+179 directories, 323 files

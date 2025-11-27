@@ -69,7 +69,7 @@ class JwtProvider(
             .body
     }
 
-    fun validateRefreshToken(token: String): String {
+    fun validateRefreshToken(token: String): Claims {
         val claims = Jwts.parserBuilder()
             .setSigningKey(secretKey)
             .build()
@@ -77,7 +77,7 @@ class JwtProvider(
             .body
 
         if (claims["type"] != "refresh") throw IllegalArgumentException("Invalid token type")
-        return claims.subject // userId
+        return claims
     }
 
     fun getExpiration(token: String): Date {

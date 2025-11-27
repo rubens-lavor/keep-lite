@@ -1,10 +1,10 @@
 services:
   # Serviço do MongoDB
   mongo-db:
-    image: mongo:7.0 # Usamos uma imagem oficial do MongoDB
+    image: mongo:7.0
     container_name: keeplite-mongo
     ports:
-      - "27017:27017" # Mapeia a porta do contêiner para a sua máquina
+      - "27017:27017" # Mapeia a porta do contêiner para a porta da máquina local
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=password
@@ -15,11 +15,11 @@ services:
 
   # Serviço do Redis
   redis-cache:
-    image: redis:7.2-alpine # Imagem leve do Redis
+    image: redis:7.2-alpine
     container_name: keeplite-redis
     ports:
       - "6379:6379"
-    command: redis-server --requirepass yourpassword # Define uma senha para o Redis
+    command: redis-server --requirepass redispassword
     volumes:
       - redis_data:/data # Garante que os dados do Redis persistam
     networks:
@@ -40,7 +40,7 @@ services:
       - SPRING_DATA_MONGODB_URI=mongodb://root:password@mongo-db:27017/keeplite?authSource=admin
       - SPRING_DATA_REDIS_HOST=redis-cache
       - SPRING_DATA_REDIS_PORT=6379
-      - SPRING_DATA_REDIS_PASSWORD=yourpassword
+      - SPRING_DATA_REDIS_PASSWORD=redispassword
     networks:
       - keeplite-network
 

@@ -49,7 +49,7 @@ class NoteServiceImpl(
         }
     }
 
-    @Cacheable(value = ["notesByUserId"], keyGenerator = "userCacheKeyGenerator")
+//    @Cacheable(value = ["notesByUserId"], keyGenerator = "userCacheKeyGenerator")
     override fun list(): List<NoteModel> {
         log.info("Buscando lista de notas")
 

@@ -2,8 +2,10 @@ package com.rubenslavor.keeplite.application.rest.auth.controller.v1
 
 import com.rubenslavor.keeplite.application.rest.auth.mapper.AuthMapper
 import com.rubenslavor.keeplite.application.rest.auth.request.LoginRequest
+import com.rubenslavor.keeplite.application.rest.auth.request.LogoutRequest
 import com.rubenslavor.keeplite.application.rest.auth.response.TokenResponse
 import com.rubenslavor.keeplite.domain.auth.usecase.AuthenticateUserUseCase
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.time.Duration
 
+@Tag(name = "Auth Controller", description = "Controller de autenticação")
 @RestController
 @RequestMapping("/api/v1/auth")
 class AuthController(
@@ -53,8 +56,8 @@ class AuthController(
     }
 
     @PostMapping("/logout")
-    fun logout(@CookieValue("refresh_token") refreshToken: String): ResponseEntity<Void> {
-        authenticateUser.logout(refreshToken)
+    fun logout(@RequestBody request: LogoutRequest): ResponseEntity<Void> {
+        authenticateUser.logout(request.refreshToken)
 
         val expiredCookie = cookie(maxAge = 0)
 
