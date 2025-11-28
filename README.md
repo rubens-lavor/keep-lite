@@ -44,14 +44,14 @@ A aplicação foi totalmente conteinerizada para facilitar a execução.
 3.  **Verifique se está rodando:**
     Aguarde alguns instantes e verifique o *Health Check*:
 
-      * URL: [http://localhost:8080/actuator/health](https://www.google.com/search?q=http://localhost:8080/actuator/health)
+      * URL: [http://localhost:8080/actuator/health](http://localhost:8080/actuator/health)
       * Resposta esperada: `{"status":"UP"}`
 
 ## 📚 Documentação da API (Swagger)
 
 A documentação interativa dos endpoints (OpenAPI) está disponível e configurada com suporte a autenticação JWT.
 
-  * **Acesse:** [http://localhost:8080/swagger-ui.html](https://www.google.com/search?q=http://localhost:8080/swagger-ui.html)
+  * **Acesse:** [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
 
 > **Nota:** Para testar endpoints protegidos no Swagger, você deve primeiro realizar o login no endpoint `/auth/login`, copiar o `accessToken` da resposta e inseri-lo no botão **Authorize** (formato: apenas o token, sem o prefixo "Bearer").
 
