@@ -30,7 +30,7 @@ A aplicação foi totalmente conteinerizada para facilitar a execução.
 1.  **Clone o repositório:**
 
     ```bash
-    git clone https://github.com/seu-usuario/keep-lite.git
+    git clone https://github.com/rubens-lavor/keep-lite.git
     cd keep-lite
     ```
 
